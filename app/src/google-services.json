@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "317682218042",
+    "project_id": "facerec-b6aba",
+    "storage_bucket": "facerec-b6aba.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317682218042:android:a3c731177790e438ddf103",
+        "android_client_info": {
+          "package_name": "com.example.mlkittest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDd5zUcCGyHurpQZoyul3KpzgCrR0MGV2E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
