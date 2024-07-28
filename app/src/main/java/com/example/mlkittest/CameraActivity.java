@@ -16,8 +16,6 @@ import androidx.core.content.ContextCompat;
 import com.example.mlkittest.databinding.ActivityCameraBinding;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import java.io.File;
-import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -124,7 +122,6 @@ public class CameraActivity extends AppCompatActivity {
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults output) {
                         Uri savedUri = output.getSavedUri();
                         String msg = "Photo capture succeeded: " + savedUri;
-                        Toast.makeText(getBaseContext(), msg, Toast.LENGTH_SHORT).show();
                         Log.d(TAG, msg);
 
                         if (savedUri != null) {

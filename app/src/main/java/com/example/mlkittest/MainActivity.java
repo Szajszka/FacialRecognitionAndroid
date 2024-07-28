@@ -44,10 +44,12 @@ public class MainActivity extends AppCompatActivity {
                                 if (encryptedFile.exists()) {
                                     try {
                                         String decryptedJsonString = decryptJSONData(encryptedFile);
-                                        if (decryptedJsonString.equals(pointsDistanceString)) {
-                                            Log.i(TAG, "Strings match");
+                                        FaceComparator faceComparator = new FaceComparator();
+                                        Double comparisonValue = faceComparator.calculateEuclideanDistance(decryptedJsonString, pointsDistanceString);
+                                        if (comparisonValue <= 200) {
+                                            Toast.makeText(getApplicationContext(), "Faces match", Toast.LENGTH_SHORT).show();
                                         } else {
-                                            Log.i(TAG, "Strings do not match");
+                                            Toast.makeText(getApplicationContext(), "Faces don't match", Toast.LENGTH_SHORT).show();
                                         }
                                     } catch (Exception e) {
                                         throw new RuntimeException(e);

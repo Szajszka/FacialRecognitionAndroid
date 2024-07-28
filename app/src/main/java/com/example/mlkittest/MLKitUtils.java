@@ -31,7 +31,6 @@ public class MLKitUtils {
 
     public void analyzeImage(Context context, Uri imageUri, ImageAnalysisCallback callback) {
         FirebaseApp.initializeApp(context);
-        Log.d(TAG, "Starting image analysis for URI: " + imageUri);
         try {
             FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(context, imageUri);
             FirebaseVisionFaceDetector detector = FirebaseVision.getInstance().getVisionFaceDetector(highAccOpt);
@@ -46,9 +45,8 @@ public class MLKitUtils {
                                 PointF current = e.getValue();
                                 pointsDistanceHM.put(e.getKey(), calculateMidpointDistance(current.x, current.y, pointsHM));
                             }
-                            pointsDistanceHM.remove(6);  // Assuming 6 is the nose base or a central point
+                            pointsDistanceHM.remove(6);  // id 6 is the nose base, distance would be 0
                             String pointsDistanceString = new Gson().toJson(pointsDistanceHM);
-                            Log.i(TAG, "Hashmap: " + pointsDistanceString);
                             callback.onSuccess(pointsDistanceString);
                         } else {
                             callback.onFailure(new Exception("No faces detected"));
