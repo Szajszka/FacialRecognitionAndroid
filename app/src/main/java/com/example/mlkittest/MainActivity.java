@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +31,12 @@ public class MainActivity extends AppCompatActivity {
                     if (result.getResultCode() == 1) {
                         Intent data = result.getData();
                         if (data != null) {
+                            HashMap<Integer, Double> distanceHashMap = (HashMap<Integer, Double>) data.getSerializableExtra("Distance_HashMap");
+                            if (distanceHashMap != null) {
+                                Log.d(TAG, "Received Distance HashMap: " + distanceHashMap.toString());
+                                // Store the distance hashmap as needed, e.g., in memory, SharedPreferences, or a local database
+                            }
+
                             File encryptedJSONFile = (File) data.getSerializableExtra("Encrypted_JSON_file");
                             if (encryptedJSONFile != null) {
                                 try {
@@ -38,8 +45,6 @@ public class MainActivity extends AppCompatActivity {
                                     Log.e(TAG, "Decryption failed: " + e.getMessage(), e);
                                     throw new RuntimeException(e);
                                 }
-                            } else {
-                                Log.e(TAG, "Encrypted JSON file is null");
                             }
                         } else {
                             Log.e(TAG, "Intent data is null");
@@ -50,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+
 
         Button button = findViewById(R.id.button);
         button.setOnClickListener(v -> {

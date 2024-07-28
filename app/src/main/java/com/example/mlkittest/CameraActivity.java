@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.ImageCapture;
 import androidx.core.content.ContextCompat;
@@ -16,6 +17,7 @@ import com.example.mlkittest.databinding.ActivityCameraBinding;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -82,13 +84,13 @@ public class CameraActivity extends AppCompatActivity {
         }
 
         // Set up the listeners for take photo and video capture buttons
-        viewBinding.imageCaptureButton.setOnClickListener(v -> takePhoto());
+        viewBinding.imageCaptureButton.setOnClickListener(v -> takePhoto(true));
         viewBinding.backButton.setOnClickListener(v -> finish());
 
         cameraExecutor = Executors.newSingleThreadExecutor();
     }
 
-    private void takePhoto() {
+    private void takePhoto(boolean encryptJson) {
         ImageCapture imageCapture = this.imageCapture;
         if (imageCapture == null) {
             return;
@@ -125,12 +127,15 @@ public class CameraActivity extends AppCompatActivity {
                         Log.d(TAG, msg);
 
                         if (savedUri != null) {
-                            mlKitUtils.analyzeImage(CameraActivity.this, savedUri, new MLKitUtils.AnalyzeImageCallback() {
+                            mlKitUtils.analyzeImage(CameraActivity.this, savedUri, encryptJson, new MLKitUtils.AnalyzeImageCallback() {
                                 @Override
-                                public void onSuccess(File encryptedFile) {
-                                    Log.d(TAG, "Image analysis succeeded, encrypted file: " + encryptedFile.getAbsolutePath());
+                                public void onSuccess(HashMap<Integer, Double> pointsDistanceHM, @Nullable File encryptedFile) {
+                                    Log.d(TAG, "Image analysis succeeded");
                                     Intent returnIntent = new Intent();
-                                    returnIntent.putExtra("Encrypted_JSON_file", encryptedFile);
+                                    returnIntent.putExtra("Distance_HashMap", pointsDistanceHM);
+                                    if (encryptedFile != null) {
+                                        returnIntent.putExtra("Encrypted_JSON_file", encryptedFile);
+                                    }
                                     setResult(1, returnIntent);
                                     finish();
                                 }

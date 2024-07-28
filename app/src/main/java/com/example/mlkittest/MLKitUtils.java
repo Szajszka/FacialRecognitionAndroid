@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,7 +32,7 @@ public class MLKitUtils {
     private SecurityUtils securityUtils;
 
     public interface AnalyzeImageCallback {
-        void onSuccess(File encryptedFile);
+        void onSuccess(HashMap<Integer, Double> pointsDistanceHM, @Nullable File encryptedFile);
         void onFailure(Exception e);
     }
 
@@ -50,7 +51,7 @@ public class MLKitUtils {
             .setClassificationMode(FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS)
             .build();
 
-    public void analyzeImage(Context context, Uri imageUri, AnalyzeImageCallback callback) {
+    public void analyzeImage(Context context, Uri imageUri, boolean encryptJson, AnalyzeImageCallback callback) {
         FirebaseApp.initializeApp(context);
         Log.d(TAG, "Starting image analysis for URI: " + imageUri);
         try {
@@ -67,19 +68,23 @@ public class MLKitUtils {
                                 PointF current = e.getValue();
                                 pointsDistanceHM.put(e.getKey(), calculateMidpointDistance(current.x, current.y, pointsHM));
                             }
-                            pointsDistanceHM.remove(6);
+                            pointsDistanceHM.remove(6);  // Assuming 6 is the nose base or a central point
                             String pointsDistanceString = new Gson().toJson(pointsDistanceHM);
 
                             Log.i(TAG, "Hashmap: " + pointsDistanceString);
 
-                            try {
-                                File encryptedFile = new File(context.getFilesDir(), "encryptedFaceJSON.txt");
-                                securityUtils.encryptJsonString(pointsDistanceString, encryptedFile);
-                                Log.i(TAG, "Encrypted JSON saved to: " + encryptedFile.getAbsolutePath());
-                                callback.onSuccess(encryptedFile);
-                            } catch (Exception e) {
-                                Log.e(TAG, "Encryption failed: " + e.getMessage(), e);
-                                callback.onFailure(e);
+                            if (encryptJson) {
+                                try {
+                                    File encryptedFile = new File(context.getFilesDir(), "encryptedFaceJSON.txt");
+                                    securityUtils.encryptJsonString(pointsDistanceString, encryptedFile);
+                                    Log.i(TAG, "Encrypted JSON saved to: " + encryptedFile.getAbsolutePath());
+                                    callback.onSuccess(pointsDistanceHM, encryptedFile);
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Encryption failed: " + e.getMessage(), e);
+                                    callback.onFailure(e);
+                                }
+                            } else {
+                                callback.onSuccess(pointsDistanceHM, null);
                             }
                         } else {
                             callback.onFailure(new Exception("No faces detected"));
