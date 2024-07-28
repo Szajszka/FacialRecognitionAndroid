@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SecurityUtils securityUtils = SecurityUtilsSingleton.getInstance();
     private static final String TAG = "MainActivity";
+    private static final Integer SIMILARITY_THRESHOLD = 200;
 
     public MainActivity() {
         try {
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
                                         String decryptedJsonString = decryptJSONData(encryptedFile);
                                         FaceComparator faceComparator = new FaceComparator();
                                         Double comparisonValue = faceComparator.calculateEuclideanDistance(decryptedJsonString, pointsDistanceString);
-                                        if (comparisonValue <= 200) {
+                                        if (comparisonValue <= SIMILARITY_THRESHOLD) {
                                             Toast.makeText(getApplicationContext(), "Faces match", Toast.LENGTH_SHORT).show();
                                         } else {
                                             Toast.makeText(getApplicationContext(), "Faces don't match", Toast.LENGTH_SHORT).show();
