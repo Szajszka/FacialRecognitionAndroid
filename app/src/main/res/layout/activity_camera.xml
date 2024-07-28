@@ -13,12 +13,23 @@
         android:layout_height="match_parent" />
 
     <Button
-        android:id="@+id/image_capture_button"
+        android:id="@+id/buttonSaveFace"
         android:layout_width="110dp"
         android:layout_height="110dp"
         android:layout_marginBottom="50dp"
         android:elevation="2dp"
-        android:text="@string/take_photo"
+        android:text="@string/save_face"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/vertical_centerline_right"/>
+
+    <Button
+        android:id="@+id/buttonCompareFace"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_marginBottom="50dp"
+        android:elevation="2dp"
+        android:text="@string/compare_face"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/vertical_centerline_left"
         app:layout_constraintEnd_toStartOf="@id/vertical_centerline_right"/>

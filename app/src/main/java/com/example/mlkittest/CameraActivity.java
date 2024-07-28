@@ -74,7 +74,7 @@ public class CameraActivity extends AppCompatActivity {
         viewBinding = ActivityCameraBinding.inflate(getLayoutInflater());
         setContentView(viewBinding.getRoot());
 
-        mlKitUtils = new MLKitUtils(this);
+        mlKitUtils = new MLKitUtils();  // Initialize mlKitUtils here
 
         // Request camera permissions
         if (allPermissionsGranted()) {
@@ -84,7 +84,8 @@ public class CameraActivity extends AppCompatActivity {
         }
 
         // Set up the listeners for take photo and video capture buttons
-        viewBinding.imageCaptureButton.setOnClickListener(v -> takePhoto(true));
+        viewBinding.buttonCompareFace.setOnClickListener(v -> takePhoto(false));
+        viewBinding.buttonSaveFace.setOnClickListener(v -> takePhoto(true));
         viewBinding.backButton.setOnClickListener(v -> finish());
 
         cameraExecutor = Executors.newSingleThreadExecutor();
@@ -127,22 +128,19 @@ public class CameraActivity extends AppCompatActivity {
                         Log.d(TAG, msg);
 
                         if (savedUri != null) {
-                            mlKitUtils.analyzeImage(CameraActivity.this, savedUri, encryptJson, new MLKitUtils.AnalyzeImageCallback() {
+                            mlKitUtils.analyzeImage(CameraActivity.this, savedUri, new ImageAnalysisCallback() {
                                 @Override
-                                public void onSuccess(HashMap<Integer, Double> pointsDistanceHM, @Nullable File encryptedFile) {
+                                public void onSuccess(String pointsDistanceString) {
                                     Log.d(TAG, "Image analysis succeeded");
                                     Intent returnIntent = new Intent();
-                                    returnIntent.putExtra("Distance_HashMap", pointsDistanceHM);
-                                    if (encryptedFile != null) {
-                                        returnIntent.putExtra("Encrypted_JSON_file", encryptedFile);
-                                    }
+                                    returnIntent.putExtra("Distance_String", pointsDistanceString);
                                     setResult(1, returnIntent);
                                     finish();
                                 }
 
                                 @Override
                                 public void onFailure(Exception e) {
-                                    Log.e(TAG, "Image analysis failed: " + e.getMessage(), e);
+                                    Log.e(TAG, "Image analysis failed", e);
                                     returnResult(3);
                                 }
                             });
@@ -154,7 +152,6 @@ public class CameraActivity extends AppCompatActivity {
                 }
         );
     }
-
 
     private void startCamera() {
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
@@ -199,8 +196,6 @@ public class CameraActivity extends AppCompatActivity {
         }, ContextCompat.getMainExecutor(this));
     }
 
-
-
     private void requestPermissions() {
         activityResultLauncher.launch(REQUIRED_PERMISSIONS);
     }
@@ -237,4 +232,3 @@ public class CameraActivity extends AppCompatActivity {
         finish();
     }
 }
-

@@ -11,11 +11,19 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
-import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
+    private SecurityUtils securityUtils = SecurityUtilsSingleton.getInstance();
     private static final String TAG = "MainActivity";
+
+    public MainActivity() {
+        try {
+            securityUtils.generateKey();  // Generate key once during initialization
+        } catch (Exception e) {
+            Log.e(TAG, "Key generation failed: " + e.getMessage(), e);
+        }
+    }
 
     private ActivityResultLauncher<Intent> activityResultLauncher;
 
@@ -24,26 +32,33 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Result codes: 1 - OK, 2 - permissions not granted, 3 - img capture failed, 4 - camera binding failed
         activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == 1) {
                         Intent data = result.getData();
                         if (data != null) {
-                            HashMap<Integer, Double> distanceHashMap = (HashMap<Integer, Double>) data.getSerializableExtra("Distance_HashMap");
-                            if (distanceHashMap != null) {
-                                Log.d(TAG, "Received Distance HashMap: " + distanceHashMap.toString());
-                                // Store the distance hashmap as needed, e.g., in memory, SharedPreferences, or a local database
-                            }
-
-                            File encryptedJSONFile = (File) data.getSerializableExtra("Encrypted_JSON_file");
-                            if (encryptedJSONFile != null) {
-                                try {
-                                    Toast.makeText(getBaseContext(), decryptJSONData(encryptedJSONFile), Toast.LENGTH_SHORT).show();
-                                } catch (Exception e) {
-                                    Log.e(TAG, "Decryption failed: " + e.getMessage(), e);
-                                    throw new RuntimeException(e);
+                            String pointsDistanceString = data.getStringExtra("Distance_String");
+                            if (pointsDistanceString != null) {
+                                File encryptedFile = new File(getBaseContext().getFilesDir(), "encryptedFaceJSON.txt");
+                                if (encryptedFile.exists()) {
+                                    try {
+                                        String decryptedJsonString = decryptJSONData(encryptedFile);
+                                        if (decryptedJsonString.equals(pointsDistanceString)) {
+                                            Log.i(TAG, "Strings match");
+                                        } else {
+                                            Log.i(TAG, "Strings do not match");
+                                        }
+                                    } catch (Exception e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                } else {
+                                    try {
+                                        securityUtils.encryptJsonString(pointsDistanceString, encryptedFile);
+                                    } catch (Exception e) {
+                                        Log.e(TAG, "Encryption failed: " + e.getMessage(), e);
+                                        throw new RuntimeException(e);
+                                    }
                                 }
                             }
                         } else {
@@ -51,11 +66,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                     } else {
                         Log.d(TAG, "Exited with code: " + result.getResultCode());
-                        // Handle the failure or cancellation case here
                     }
                 }
         );
-
 
         Button button = findViewById(R.id.button);
         button.setOnClickListener(v -> {
@@ -65,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public String decryptJSONData(File encryptedJSONFile) throws Exception {
-        SecurityUtils securityUtils = SecurityUtilsSingleton.getInstance();
         return securityUtils.decryptJsonString(encryptedJSONFile);
     }
 }

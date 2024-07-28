@@ -2,10 +2,13 @@ package com.example.mlkittest;
 
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
+import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 
@@ -18,11 +21,22 @@ import javax.crypto.spec.GCMParameterSpec;
 
 public class SecurityUtils {
 
+    private static final String TAG = "SecurityUtils";
+    private static final String KEY_ALIAS = "FaceDistancesKey";
+
     public void generateKey() throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+        keyStore.load(null);
+
+        // Check if the key already exists
+        if (keyStore.containsAlias(KEY_ALIAS)) {
+            return;
+        }
+
         KeyGenerator keyGenerator = KeyGenerator.getInstance(
                 KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
         keyGenerator.init(new KeyGenParameterSpec.Builder(
-                "FaceDistancesKey",
+                KEY_ALIAS,
                 KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                 .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
@@ -33,7 +47,7 @@ public class SecurityUtils {
     public SecretKey getSecretKey() throws Exception {
         KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);
-        return ((KeyStore.SecretKeyEntry) keyStore.getEntry("FaceDistancesKey", null)).getSecretKey();
+        return ((KeyStore.SecretKeyEntry) keyStore.getEntry(KEY_ALIAS, null)).getSecretKey();
     }
 
     public void encryptJsonString(String jsonString, File outputFile) throws Exception {
@@ -55,15 +69,37 @@ public class SecurityUtils {
 
         try (FileInputStream fileInputStream = new FileInputStream(inputFile)) {
             byte[] iv = new byte[12];
-            fileInputStream.read(iv);
+            int bytesRead = fileInputStream.read(iv);
+
+            if (bytesRead != 12) {
+                throw new IOException("Invalid IV length");
+            }
 
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(128, iv));
 
-            try (CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, cipher)) {
-                byte[] decryptedData = cipherInputStream.readAllBytes();
+            try (CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, cipher);
+                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = cipherInputStream.read(buffer)) != -1) {
+                    byteArrayOutputStream.write(buffer, 0, len);
+                }
+
+                byte[] decryptedData = byteArrayOutputStream.toByteArray();
+                Log.d(TAG, "Decrypted data length: " + decryptedData.length);
                 return new String(decryptedData, StandardCharsets.UTF_8);
             }
         }
     }
+
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
 }
+
