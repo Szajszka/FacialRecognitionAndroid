@@ -3,4 +3,9 @@
     <string name="compare_face">Compare Face</string>
     <string name="back">Return</string>
     <string name="save_face">Save Face</string>
+    <string name="open_camera">Open camera</string>
+    <string name="input_pin">Input PIN</string>
+    <string name="enter_pin">Enter PIN</string>
+    <string name="confirm_pin">Confirm PIN</string>
+    <string name="confirm">Confirm</string>
 </resources>

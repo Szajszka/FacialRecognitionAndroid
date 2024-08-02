@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
                                 File encryptedFile = new File(getBaseContext().getFilesDir(), "encryptedFaceJSON.txt");
                                 if (encryptedFile.exists()) {
                                     try {
-                                        String decryptedJsonString = decryptJSONData(encryptedFile);
+                                        String decryptedJsonString = securityUtils.decryptJsonString(encryptedFile);
                                         FaceComparator faceComparator = new FaceComparator();
                                         Double comparisonValue = faceComparator.calculateEuclideanDistance(decryptedJsonString, pointsDistanceString);
                                         if (comparisonValue <= SIMILARITY_THRESHOLD) {
@@ -73,14 +73,16 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
-        Button button = findViewById(R.id.button);
-        button.setOnClickListener(v -> {
+        Button buttonOpenCamera = findViewById(R.id.buttonOpenCamera);
+        buttonOpenCamera.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, CameraActivity.class);
             activityResultLauncher.launch(intent);
         });
-    }
 
-    public String decryptJSONData(File encryptedJSONFile) throws Exception {
-        return securityUtils.decryptJsonString(encryptedJSONFile);
+        Button buttonEnterPin = findViewById(R.id.buttonInputPin);
+        buttonEnterPin.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, PinActivity.class);
+            activityResultLauncher.launch(intent);
+        });
     }
 }
