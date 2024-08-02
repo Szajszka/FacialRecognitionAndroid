@@ -1,7 +1,5 @@
 package com.example.mlkittest;
 
-import android.graphics.PointF;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

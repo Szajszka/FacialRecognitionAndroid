@@ -42,7 +42,9 @@ dependencies {
     implementation "androidx.camera:camera-view:${camerax_version}"
     implementation "androidx.camera:camera-extensions:${camerax_version}"
 
+    //noinspection GradleDependency
     implementation 'com.google.firebase:firebase-ml-vision:24.0.3'
+    //noinspection GradleDependency
     implementation 'com.google.firebase:firebase-ml-vision-face-model:20.0.1'
 
     implementation 'com.google.code.gson:gson:2.11.0'

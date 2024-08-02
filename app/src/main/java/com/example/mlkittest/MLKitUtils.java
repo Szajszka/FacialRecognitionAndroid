@@ -17,7 +17,6 @@ import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MLKitUtils {
 
@@ -39,7 +38,7 @@ public class MLKitUtils {
                     .addOnSuccessListener(faces -> {
                         if (!faces.isEmpty()) {
                             FirebaseVisionFace face = faces.get(0);
-                            HashMap<Integer, PointF> pointsHM = getLandmarkPointsHMap(context, face);
+                            HashMap<Integer, PointF> pointsHM = getLandmarkPointsHMap(face);
                             HashMap<Integer, Double> pointsDistanceHM = new HashMap<>();
                             for (Map.Entry<Integer, PointF> e : pointsHM.entrySet()) {
                                 PointF current = e.getValue();
@@ -60,7 +59,7 @@ public class MLKitUtils {
         }
     }
 
-    private HashMap<Integer, PointF> getLandmarkPointsHMap(Context context, FirebaseVisionFace face) {
+    private HashMap<Integer, PointF> getLandmarkPointsHMap(FirebaseVisionFace face) {
         HashMap<Integer, PointF> pointsHM = new HashMap<>();
 
         int[] landmarkTypes = { // Landmarks loaded in an order based on id not to waste log(n) for sorting

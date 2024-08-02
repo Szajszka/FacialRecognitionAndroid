@@ -1,7 +1,5 @@
 package com.example.mlkittest;
 
-import android.content.Context;
-
 public class SecurityUtilsSingleton {
     private static SecurityUtils instance;
 

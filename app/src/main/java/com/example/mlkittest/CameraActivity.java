@@ -9,7 +9,6 @@ import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.ImageCapture;
 import androidx.core.content.ContextCompat;
@@ -59,9 +58,7 @@ public class CameraActivity extends AppCompatActivity {
                     }
                 }
                 if (!permissionGranted) {
-                    Toast.makeText(getBaseContext(),
-                            "Permission request denied",
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), "Permission request denied", Toast.LENGTH_SHORT).show();
                 } else {
                     startCamera();
                 }
@@ -76,8 +73,8 @@ public class CameraActivity extends AppCompatActivity {
         mlKitUtils = new MLKitUtils();  // Initialize mlKitUtils
 
         // Set up the listeners for take photo and video capture buttons
-        viewBinding.buttonCompareFace.setOnClickListener(v -> takePhoto(false));
-        viewBinding.buttonSaveFace.setOnClickListener(v -> takePhoto(true));
+        viewBinding.buttonCompareFace.setOnClickListener(v -> takePhoto());
+        viewBinding.buttonSaveFace.setOnClickListener(v -> takePhoto());
         viewBinding.buttonSaveFace.setVisibility(View.GONE);
         viewBinding.backButton.setOnClickListener(v -> finish());
 
@@ -97,7 +94,7 @@ public class CameraActivity extends AppCompatActivity {
         cameraExecutor = Executors.newSingleThreadExecutor();
     }
 
-    private void takePhoto(boolean encryptJson) {
+    private void takePhoto() {
         ImageCapture imageCapture = this.imageCapture;
         if (imageCapture == null) {
             return;
@@ -129,8 +126,7 @@ public class CameraActivity extends AppCompatActivity {
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults output) {
                         Uri savedUri = output.getSavedUri();
-                        String msg = "Photo capture succeeded: " + savedUri;
-                        Log.d(TAG, msg);
+                        Log.d(TAG, "Photo capture succeeded");
 
                         if (savedUri != null) {
                             mlKitUtils.analyzeImage(CameraActivity.this, savedUri, new ImageAnalysisCallback() {
@@ -150,7 +146,7 @@ public class CameraActivity extends AppCompatActivity {
                                 }
                             });
                         } else {
-                            Log.e(TAG, "Saved URI is null");
+                            Log.e(TAG, "Saved image is null");
                             returnResultCanceled();
                         }
                     }
@@ -166,8 +162,7 @@ public class CameraActivity extends AppCompatActivity {
                 // Used to bind the lifecycle of cameras to the lifecycle owner
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
                 // Preview
-                Preview preview = new Preview.Builder()
-                        .build();
+                Preview preview = new Preview.Builder().build();
                 preview.setSurfaceProvider(viewBinding.viewFinder.getSurfaceProvider());
 
                 imageCapture = new ImageCapture.Builder()

@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         pinResult = result.getData().getBooleanExtra("Pin_Result", false);
                     } else {
-                        Toast.makeText(this, "Pin check failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Pin not correct", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
                                         if (comparisonValue <= SIMILARITY_THRESHOLD) {
                                             Toast.makeText(getApplicationContext(), "Faces match", Toast.LENGTH_SHORT).show();
                                             imageViewHiddenImg.setVisibility(View.VISIBLE);
-
                                         } else {
                                             Toast.makeText(getApplicationContext(), "Faces don't match", Toast.LENGTH_SHORT).show();
                                         }
@@ -85,8 +84,6 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         }
-                    } else {
-                        Log.d(TAG, "Exited with code: " + result.getResultCode());
                     }
                 }
         );

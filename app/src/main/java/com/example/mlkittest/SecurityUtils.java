@@ -2,7 +2,6 @@ package com.example.mlkittest;
 
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
-import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -88,7 +87,6 @@ public class SecurityUtils {
                 }
 
                 byte[] decryptedData = byteArrayOutputStream.toByteArray();
-                Log.d(TAG, "Decrypted data length: " + decryptedData.length);
                 return new String(decryptedData, StandardCharsets.UTF_8);
             }
         }
