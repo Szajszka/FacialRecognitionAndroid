@@ -36,16 +36,16 @@ import java.util.Locale;
 
 public class CameraActivity extends AppCompatActivity {
     private ActivityCameraBinding viewBinding;
-    private ImageCapture imageCapture = null;
-    private ExecutorService cameraExecutor;
-    private MLKitUtils mlKitUtils;
+    ImageCapture imageCapture = null;
+    ExecutorService cameraExecutor;
+    MLKitUtils mlKitUtils;
     private static final String TAG = "CameraXApp";
     private static final String FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS";
     private static final String[] REQUIRED_PERMISSIONS =
             new String[]{
                     Manifest.permission.CAMERA,
                     Manifest.permission.RECORD_AUDIO};
-    private ActivityResultLauncher<String[]> activityResultLauncher =
+    ActivityResultLauncher<String[]> activityResultLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), permissions -> {
                 // Handle Permission granted/rejected
                 boolean permissionGranted = true;
@@ -94,7 +94,7 @@ public class CameraActivity extends AppCompatActivity {
         cameraExecutor = Executors.newSingleThreadExecutor();
     }
 
-    private void takePhoto() {
+    void takePhoto() {
         ImageCapture imageCapture = this.imageCapture;
         if (imageCapture == null) {
             return;
@@ -196,11 +196,11 @@ public class CameraActivity extends AppCompatActivity {
         }, ContextCompat.getMainExecutor(this));
     }
 
-    private void requestPermissions() {
+    void requestPermissions() {
         activityResultLauncher.launch(REQUIRED_PERMISSIONS);
     }
 
-    private boolean allPermissionsGranted() {
+    boolean allPermissionsGranted() {
         for (String permission : REQUIRED_PERMISSIONS) {
             if (ContextCompat.checkSelfPermission(
                     getBaseContext(), permission) != PackageManager.PERMISSION_GRANTED) {
