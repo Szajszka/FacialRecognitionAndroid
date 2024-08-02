@@ -6,23 +6,53 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:id="@+id/imageViewHiddenImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/goose"
+        tools:layout_editor_absoluteX="140dp"
+        tools:layout_editor_absoluteY="102dp"
+        android:maxHeight="200dp"
+        android:adjustViewBounds="true"
+        android:layout_marginBottom="140dp"
+        app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
+        app:layout_constraintBottom_toTopOf="@+id/buttonOpenCamera"
+        android:contentDescription="@string/hidden_message" />
+
     <Button
         android:id="@+id/buttonOpenCamera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="165dp"
-        android:layout_marginTop="598dp"
         android:text="@string/open_camera"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginBottom="70dp"
+        app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
+        app:layout_constraintBottom_toTopOf="@+id/buttonInputPin" />
 
     <Button
-    android:id="@+id/buttonInputPin"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="165dp"
-    android:layout_marginTop="650dp"
-    android:text="@string/input_pin"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/buttonInputPin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/input_pin"
+        android:layout_marginBottom="100dp"
+        app:layout_constraintStart_toStartOf="@+id/guidelineLeft"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineRight"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".33" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".66" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

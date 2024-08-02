@@ -10,37 +10,53 @@
         android:id="@+id/editTextNumberPin"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
-        android:layout_marginStart="97dp"
-        android:layout_marginTop="142dp"
-        android:ems="10"
-        android:maxLength="4"
-        android:inputType="numberPassword"
+        android:layout_marginTop="100dp"
+        android:ems="5"
         android:hint="@string/enter_pin"
+        android:textAlignment="center"
         android:importantForAutofill="no"
-        app:layout_constraintStart_toStartOf="parent"
+        android:inputType="numberPassword"
+        android:maxLength="4"
+        app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+        app:layout_constraintEnd_toStartOf="@id/guidelineRight"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/editTextNumberPinConfirm"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
-        android:layout_marginStart="96dp"
-        android:layout_marginTop="268dp"
-        android:ems="10"
+        android:layout_marginTop="70dp"
+        android:ems="5"
         android:hint="@string/confirm_pin"
+        android:textAlignment="center"
         android:importantForAutofill="no"
         android:inputType="numberPassword"
         android:maxLength="4"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+        app:layout_constraintEnd_toStartOf="@id/guidelineRight"
+        app:layout_constraintTop_toTopOf="@+id/editTextNumberPin" />
 
     <Button
         android:id="@+id/buttonConfirm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="151dp"
-        android:layout_marginTop="90dp"
+        android:layout_marginTop="70dp"
         android:text="@string/confirm"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextNumberPinConfirm" />
+        app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+        app:layout_constraintEnd_toStartOf="@id/guidelineRight"
+        app:layout_constraintTop_toTopOf="@+id/editTextNumberPinConfirm" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".33" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".66" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,6 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.provider.MediaStore;
+import android.view.View;
 import android.widget.Toast;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.camera.lifecycle.ProcessCameraProvider;
@@ -72,7 +73,13 @@ public class CameraActivity extends AppCompatActivity {
         viewBinding = ActivityCameraBinding.inflate(getLayoutInflater());
         setContentView(viewBinding.getRoot());
 
-        mlKitUtils = new MLKitUtils();  // Initialize mlKitUtils here
+        mlKitUtils = new MLKitUtils();  // Initialize mlKitUtils
+
+        // Set up the listeners for take photo and video capture buttons
+        viewBinding.buttonCompareFace.setOnClickListener(v -> takePhoto(false));
+        viewBinding.buttonSaveFace.setOnClickListener(v -> takePhoto(true));
+        viewBinding.buttonSaveFace.setVisibility(View.GONE);
+        viewBinding.backButton.setOnClickListener(v -> finish());
 
         // Request camera permissions
         if (allPermissionsGranted()) {
@@ -81,10 +88,11 @@ public class CameraActivity extends AppCompatActivity {
             requestPermissions();
         }
 
-        // Set up the listeners for take photo and video capture buttons
-        viewBinding.buttonCompareFace.setOnClickListener(v -> takePhoto(false));
-        viewBinding.buttonSaveFace.setOnClickListener(v -> takePhoto(true));
-        viewBinding.backButton.setOnClickListener(v -> finish());
+        Intent intent = getIntent();
+        boolean pinResult = intent.getBooleanExtra("Pin_result", false);
+        if (pinResult) {
+            viewBinding.buttonSaveFace.setVisibility(View.VISIBLE);
+        }
 
         cameraExecutor = Executors.newSingleThreadExecutor();
     }
@@ -115,7 +123,7 @@ public class CameraActivity extends AppCompatActivity {
                     @Override
                     public void onError(@NonNull ImageCaptureException exc) {
                         Log.e(TAG, "Photo capture failed: " + exc.getMessage(), exc);
-                        returnResult(3);
+                        returnResultCanceled();
                     }
 
                     @Override
@@ -131,19 +139,19 @@ public class CameraActivity extends AppCompatActivity {
                                     Log.d(TAG, "Image analysis succeeded");
                                     Intent returnIntent = new Intent();
                                     returnIntent.putExtra("Distance_String", pointsDistanceString);
-                                    setResult(1, returnIntent);
+                                    setResult(RESULT_OK, returnIntent);
                                     finish();
                                 }
 
                                 @Override
                                 public void onFailure(Exception e) {
                                     Log.e(TAG, "Image analysis failed", e);
-                                    returnResult(3);
+                                    returnResultCanceled();
                                 }
                             });
                         } else {
                             Log.e(TAG, "Saved URI is null");
-                            returnResult(3);
+                            returnResultCanceled();
                         }
                     }
                 }
@@ -187,7 +195,7 @@ public class CameraActivity extends AppCompatActivity {
                 );
             } catch (Exception e) {
                 Log.e(TAG, "Use case binding failed", e);
-                returnResult(4);
+                returnResultCanceled();
             }
 
         }, ContextCompat.getMainExecutor(this));
@@ -201,7 +209,7 @@ public class CameraActivity extends AppCompatActivity {
         for (String permission : REQUIRED_PERMISSIONS) {
             if (ContextCompat.checkSelfPermission(
                     getBaseContext(), permission) != PackageManager.PERMISSION_GRANTED) {
-                returnResult(2);
+                returnResultCanceled();
                 return false;
             }
         }
@@ -223,9 +231,9 @@ public class CameraActivity extends AppCompatActivity {
         cameraExecutor.shutdown();
     }
 
-    public void returnResult(int resultCode) {
+    public void returnResultCanceled() {
         Intent returnIntent = new Intent();
-        setResult(resultCode, returnIntent);
+        setResult(RESULT_CANCELED, returnIntent);
         finish();
     }
 }

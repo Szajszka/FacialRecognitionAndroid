@@ -3,7 +3,9 @@ package com.example.mlkittest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -16,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SecurityUtils securityUtils = SecurityUtilsSingleton.getInstance();
     private static final String TAG = "MainActivity";
+    private boolean pinResult = false;
     private static final Integer SIMILARITY_THRESHOLD = 200;
 
     public MainActivity() {
@@ -26,19 +29,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private ActivityResultLauncher<Intent> activityResultLauncher;
+    private ActivityResultLauncher<Intent> cameraResultLauncher;
+    private ActivityResultLauncher<Intent> pinResultLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        activityResultLauncher = registerForActivityResult(
+        ImageView imageViewHiddenImg = findViewById(R.id.imageViewHiddenImg);
+        imageViewHiddenImg.setVisibility(View.GONE);
+
+        pinResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if (result.getResultCode() == 1) {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        pinResult = result.getData().getBooleanExtra("Pin_Result", false);
+                    } else {
+                        Toast.makeText(this, "Pin check failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
+        cameraResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Intent data = result.getData();
-                        if (data != null) {
+                        if (data.hasExtra("Distance_String")) {
                             String pointsDistanceString = data.getStringExtra("Distance_String");
                             if (pointsDistanceString != null) {
                                 File encryptedFile = new File(getBaseContext().getFilesDir(), "encryptedFaceJSON.txt");
@@ -49,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
                                         Double comparisonValue = faceComparator.calculateEuclideanDistance(decryptedJsonString, pointsDistanceString);
                                         if (comparisonValue <= SIMILARITY_THRESHOLD) {
                                             Toast.makeText(getApplicationContext(), "Faces match", Toast.LENGTH_SHORT).show();
+                                            imageViewHiddenImg.setVisibility(View.VISIBLE);
+
                                         } else {
                                             Toast.makeText(getApplicationContext(), "Faces don't match", Toast.LENGTH_SHORT).show();
                                         }
@@ -64,8 +84,6 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }
                             }
-                        } else {
-                            Log.e(TAG, "Intent data is null");
                         }
                     } else {
                         Log.d(TAG, "Exited with code: " + result.getResultCode());
@@ -76,13 +94,14 @@ public class MainActivity extends AppCompatActivity {
         Button buttonOpenCamera = findViewById(R.id.buttonOpenCamera);
         buttonOpenCamera.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, CameraActivity.class);
-            activityResultLauncher.launch(intent);
+            intent.putExtra("Pin_result", pinResult);
+            cameraResultLauncher.launch(intent);
         });
 
         Button buttonEnterPin = findViewById(R.id.buttonInputPin);
         buttonEnterPin.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, PinActivity.class);
-            activityResultLauncher.launch(intent);
+            pinResultLauncher.launch(intent);
         });
     }
 }
