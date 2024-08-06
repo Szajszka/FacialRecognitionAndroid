@@ -136,12 +136,14 @@ public class CameraActivity extends AppCompatActivity {
                                     Intent returnIntent = new Intent();
                                     returnIntent.putExtra("Distance_String", pointsDistanceString);
                                     setResult(RESULT_OK, returnIntent);
+                                    deleteImage(savedUri);
                                     finish();
                                 }
 
                                 @Override
                                 public void onFailure(Exception e) {
                                     Log.e(TAG, "Image analysis failed", e);
+                                    deleteImage(savedUri);
                                     returnResultCanceled();
                                 }
                             });
@@ -230,5 +232,12 @@ public class CameraActivity extends AppCompatActivity {
         Intent returnIntent = new Intent();
         setResult(RESULT_CANCELED, returnIntent);
         finish();
+    }
+
+    private void deleteImage(Uri imageUri) {
+        if (imageUri != null) {
+            getContentResolver().delete(imageUri, null, null);
+            Log.d(TAG, "Image deleted: " + imageUri.toString());
+        }
     }
 }
