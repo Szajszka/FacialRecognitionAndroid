@@ -39,7 +39,7 @@ public class CameraActivity extends AppCompatActivity {
     ImageCapture imageCapture = null;
     ExecutorService cameraExecutor;
     MLKitUtils mlKitUtils;
-    private static final String TAG = "CameraXApp";
+    private static final String TAG = "FaceFinder";
     private static final String FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS";
     private static final String[] REQUIRED_PERMISSIONS =
             new String[]{
@@ -204,12 +204,12 @@ public class CameraActivity extends AppCompatActivity {
         for (String permission : REQUIRED_PERMISSIONS) {
             if (ContextCompat.checkSelfPermission(
                     getBaseContext(), permission) != PackageManager.PERMISSION_GRANTED) {
-                returnResultCanceled();
                 return false;
             }
         }
         return true;
     }
+
 
     private boolean isRequiredPermission(String permission) {
         for (String requiredPermission : REQUIRED_PERMISSIONS) {

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CameraXApp</string>
+    <string name="app_name">FaceFinder</string>
     <string name="compare_face">Compare Face</string>
     <string name="back">Return</string>
     <string name="save_face">Save Face</string>

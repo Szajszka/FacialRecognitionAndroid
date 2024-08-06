@@ -19,8 +19,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 
 public class SecurityUtils {
-
-    private static final String TAG = "SecurityUtils";
     private static final String KEY_ALIAS = "FaceDistancesKey";
 
     public void generateKey() throws Exception {
